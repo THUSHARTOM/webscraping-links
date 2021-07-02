@@ -1,64 +1,43 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from urllib.parse import urlparse, urljoin
+import string
 
-sitename = "Cetera"                                     # Site to Scrape
-url = 'https://advisor.foundingminds.in/'                     # site URL
+sitename = "Redtail"                                     # Site to Scrape
+# site URL
+url = 'https://dev.otw.redtailtechnology.com/dashboard/overview'
 reqs = requests.get(url)
 soup = BeautifulSoup(reqs.text, 'html.parser')
 check = []
+
+
+def remove(string):
+    return string.strip()
+
+
 def address_extraction():
     http_address = []
+    menu = []
     for link in soup.find_all('a'):
         the_string = link.get('href')
-        # print(the_string)
-        check.append(the_string)
+        name = link.contents[0]
+        try:
+            name = remove(name)
+            if name in ["", " "]:
+                continue
 
-        if str(the_string).startswith("http"):
-            http_address.append(the_string)
-        if str(the_string).startswith("/"):
-            part1 = the_string.split("/",1)[1]
-            if str(url + part1) not in http_address:
-                # if "?" not in part1 and "#" not in part1 :
-                http_address.append(url + part1)
-        if str(the_string).endswith(".html"):
-            if str(url + the_string) not in http_address:
-                http_address.append(url + the_string)
-        # else:
-        #     for part in the_string.split("/"):
-        #         print(part[0])
-                # topics.append(part[1])
+            href = urljoin(url, the_string)
+            http_address.append(href)
+            menu.append(name)
+        except:
+            print(name)
 
     # print(html_address, http_address)
-    # print(topics)
-    return http_address
+    return http_address, menu
 
 
-### Generating menu list
-def menuListGeneration(address):
-    menu_list = []
-    http_address = []
-    for item in address:
-        try:
-            check = item.split("/")[-1]
-            if check not in " ":
-                # print(check)
-                # print(item)
-                menu_list.append(check)
-                http_address.append(item)
-            else:
-                check = item.split("/")[-2]
-                menu_list.append(check)
-                http_address.append(item)
-                # print(check)
-                # print(item)
-        except Exception as e:
-            print("This item caused an exception", item)
-    return menu_list, http_address
-
-
-
-### Json data generation
+# Json data generation
 
 def jsonbiulder(menuList, urls):
     data = {}
@@ -73,7 +52,7 @@ def jsonbiulder(menuList, urls):
 
     return data
 
-### Json struct
+# Json struct
 
 # {
 #     sitename(eg-"productHunt"):{
@@ -86,12 +65,13 @@ def jsonbiulder(menuList, urls):
 
 
 if __name__ == "__main__":
-    http_address = address_extraction()
+    http_address, menu_list = address_extraction()
     # print(http_address)
-    menu_list, http_address = menuListGeneration(http_address)
-    print(len(http_address))
-    print(len(menu_list))
+    # menu_list, http_address = menuListGeneration(http_address)
+    # print(len(http_address))
+    # print(len(menu_list))
     json_data = jsonbiulder(menu_list, http_address)
     print(json_data)
-    with open('test.json', 'w') as json_file:
+    filename = sitename + ".json"
+    with open(filename, 'w') as json_file:
         json.dump(json_data, json_file)
