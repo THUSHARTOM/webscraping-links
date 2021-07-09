@@ -4,9 +4,9 @@ import json
 from urllib.parse import urlparse, urljoin
 import string
 
-sitename = "Redtail"                                     # Site to Scrape
+sitename = "Cetera"                                     # Site to Scrape
 # site URL
-url = 'https://dev.otw.redtailtechnology.com/dashboard/overview'
+url = 'https://advisor.foundingminds.in/index.html'
 reqs = requests.get(url)
 soup = BeautifulSoup(reqs.text, 'html.parser')
 check = []
@@ -30,8 +30,11 @@ def address_extraction():
             href = urljoin(url, the_string)
             http_address.append(href)
             menu.append(name)
+            if name in menu:
+                print(name)
         except:
-            print(name)
+            # print(name)
+            continue
 
     # print(html_address, http_address)
     return http_address, menu
@@ -42,13 +45,17 @@ def address_extraction():
 def jsonbiulder(menuList, urls):
     data = {}
     data[sitename] = {}
-    data[sitename]['menus'] = []
+    data[sitename]["menus"] = []
 
     for i in range(len(urls)):
         data[sitename]['menus'].append(
             str(menuList[i])
         )
-        data[sitename][menuList[i]] = urls[i]
+        # print(urls[i])
+        data[sitename][menuList[i]] = {}
+        data[sitename][menuList[i]]["url"] = urls[i]
+        data[sitename][menuList[i]]["haschild"] = "False",
+        data[sitename][menuList[i]]["child"] = {}
 
     return data
 
@@ -67,11 +74,10 @@ def jsonbiulder(menuList, urls):
 if __name__ == "__main__":
     http_address, menu_list = address_extraction()
     # print(http_address)
-    # menu_list, http_address = menuListGeneration(http_address)
     # print(len(http_address))
     # print(len(menu_list))
     json_data = jsonbiulder(menu_list, http_address)
-    print(json_data)
+    # print(json_data)
     filename = sitename + ".json"
     with open(filename, 'w') as json_file:
         json.dump(json_data, json_file)

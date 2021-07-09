@@ -1,7 +1,8 @@
 
 
 data = {
-    "sitename": {
+    "sitename": "Cetera"
+    {
 
         "menus": ["menu1", "menu2", "menu3"],
 
@@ -33,15 +34,16 @@ data = {
 
                     }
                 }
-            },
+            }
+        },
 
-            "menu2": {
+        "menu2": {
                 "url": "https://..",
                 "haschild": "False",
                 "child": {}
             },
 
-            "menu3": {
+        "menu3": {
                 "url": "https://..",
                 "haschild": "True",
                 "child": {
@@ -56,4 +58,4 @@ data = {
             },
         }
     }
-}
+
