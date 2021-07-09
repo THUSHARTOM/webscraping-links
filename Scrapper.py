@@ -6,8 +6,8 @@ import string
 
 sitename = "Cetera"                                     # Site to Scrape
 # site URL
-url = 'https://advisor.foundingminds.in/index.html'
-reqs = requests.get(url)
+site_url = "https://advisor.foundingminds.in/index.html"
+reqs = requests.get(site_url)
 soup = BeautifulSoup(reqs.text, 'html.parser')
 check = []
 
@@ -27,7 +27,7 @@ def address_extraction():
             if name in ["", " "]:
                 continue
 
-            href = urljoin(url, the_string)
+            href = urljoin(site_url, the_string)
             http_address.append(href)
             menu.append(name)
             if name in menu:
@@ -44,18 +44,21 @@ def address_extraction():
 
 def jsonbiulder(menuList, urls):
     data = {}
-    data[sitename] = {}
-    data[sitename]["menus"] = []
+    data["site"] = {}
+    data["site"]["sitename"] = sitename
+    data["site"]["url"] = site_url
+    data["site"]["haschild"] = "True"
+    data["site"]["menus"] = []
 
     for i in range(len(urls)):
-        data[sitename]['menus'].append(
+        data["site"]['menus'].append(
             str(menuList[i])
         )
         # print(urls[i])
-        data[sitename][menuList[i]] = {}
-        data[sitename][menuList[i]]["url"] = urls[i]
-        data[sitename][menuList[i]]["haschild"] = "False",
-        data[sitename][menuList[i]]["child"] = {}
+        data["site"][menuList[i]] = {}
+        data["site"][menuList[i]]["url"] = urls[i]
+        data["site"][menuList[i]]["haschild"] = "False"
+        data["site"][menuList[i]]["child"] = {}
 
     return data
 
